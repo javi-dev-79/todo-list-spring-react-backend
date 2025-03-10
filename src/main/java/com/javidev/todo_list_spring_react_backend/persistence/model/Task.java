@@ -27,6 +27,7 @@ public class Task {
     private Instant endDate;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private TaskStatus taskStatus;
 
     @ManyToOne

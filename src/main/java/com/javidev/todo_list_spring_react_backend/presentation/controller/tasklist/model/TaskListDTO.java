@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class TaskListDTO {
     private UUID id;
-    private String title;
+    private String name;
     private UUID userId;
     private List<TaskDTO> tasks;
 }

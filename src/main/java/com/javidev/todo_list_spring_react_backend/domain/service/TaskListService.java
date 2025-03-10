@@ -3,7 +3,6 @@ package com.javidev.todo_list_spring_react_backend.domain.service;
 import com.javidev.todo_list_spring_react_backend.domain.exception.NonExistingEntityException;
 import com.javidev.todo_list_spring_react_backend.domain.model.tasklist.CreateTaskListParameters;
 import com.javidev.todo_list_spring_react_backend.domain.model.tasklist.UpdateTaskListParameters;
-import com.javidev.todo_list_spring_react_backend.persistence.model.AppUser;
 import com.javidev.todo_list_spring_react_backend.persistence.model.TaskList;
 import com.javidev.todo_list_spring_react_backend.persistence.repository.TaskListRepository;
 import com.javidev.todo_list_spring_react_backend.persistence.repository.UserRepository;
@@ -32,13 +31,14 @@ public class TaskListService {
     }
 
     @Transactional
-    public TaskList createTaskList(CreateTaskListParameters createTaskListParameters) {
-        var user = userRepository.findById(createTaskListParameters.getUser().getId())
-                .orElseThrow(() -> new NonExistingEntityException(AppUser.class, createTaskListParameters.getUser().getId()));
+    public TaskList createTaskList(CreateTaskListParameters parameters) {
+        var user = userRepository.findById(parameters.getUserId())
+                .orElseThrow(() -> new NonExistingEntityException(TaskList.class, parameters.getUserId()));
 
         var taskList = TaskList.builder()
-                .name(createTaskListParameters.getName())
+                .name(parameters.getName())
                 .user(user)
+                .tasks(List.of())
                 .build();
 
         return taskListRepository.save(taskList);

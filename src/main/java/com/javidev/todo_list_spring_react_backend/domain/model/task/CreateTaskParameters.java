@@ -16,7 +16,7 @@ import java.util.UUID;
 public class CreateTaskParameters {
     private String title;
     private String description;
-    private Instant end_date;
+    private Instant endDate;
     private TaskStatus taskStatus;
     private UUID taskListId;
 }

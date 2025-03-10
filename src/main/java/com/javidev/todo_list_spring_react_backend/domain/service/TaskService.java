@@ -33,21 +33,25 @@ public class TaskService {
     }
 
     @Transactional
-    public Task createTask(CreateTaskParameters createTaskParameters) {
+    public Task createTask(CreateTaskParameters parameters) {
+        if (parameters.getTaskListId() == null) {
+            throw new IllegalArgumentException("El ID de la lista de tareas no puede ser nulo");
+        }
 
-        var taskList = taskListRepository.findById(createTaskParameters.getTaskListId())
-                .orElseThrow(() -> new NonExistingEntityException(TaskList.class, createTaskParameters.getTaskListId()));
+        TaskList taskList = taskListRepository.findById(parameters.getTaskListId())
+                .orElseThrow(() -> new NonExistingEntityException(TaskList.class, parameters.getTaskListId()));
 
-        var task = Task.builder()
-                .title(createTaskParameters.getTitle())
-                .description(createTaskParameters.getDescription())
-                .endDate(createTaskParameters.getEnd_date())
-                .taskStatus(createTaskParameters.getTaskStatus())
+        Task task = Task.builder()
+                .title(parameters.getTitle())
+                .description(parameters.getDescription())
+                .endDate(parameters.getEndDate())
+                .taskStatus(parameters.getTaskStatus())
                 .taskList(taskList)
                 .build();
 
         return taskRepository.save(task);
     }
+
 
     @Transactional
     public Task updateTask(UUID id, UpdateTaskParameters updateTaskParameters) {

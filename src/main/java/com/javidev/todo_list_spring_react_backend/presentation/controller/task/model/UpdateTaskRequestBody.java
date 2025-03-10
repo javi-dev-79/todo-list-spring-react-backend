@@ -16,7 +16,7 @@ import java.time.Instant;
 public class UpdateTaskRequestBody {
     private String title;
     private String description;
-    private Instant end_date;
+    private Instant endDate;
     private TaskStatus taskStatus;
     private TaskList taskList;
 }

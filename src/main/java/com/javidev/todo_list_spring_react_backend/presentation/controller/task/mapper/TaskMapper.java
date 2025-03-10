@@ -14,11 +14,12 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface TaskMapper {
 
-    @Mapping(source = "taskList.id", target = "taskListId")
+    @Mapping(source = "task.taskList.id", target = "taskListId")
     TaskDTO toDTO(Task task);
 
     List<TaskDTO> toDTO(List<Task> tasks);
 
+    @Mapping(source = "taskListId", target = "taskListId")
     CreateTaskParameters toCreateTaskParameters(CreateTaskRequestBody requestBody);
 
     UpdateTaskParameters toUpdateTaskParameters(UpdateTaskRequestBody requestBody);
