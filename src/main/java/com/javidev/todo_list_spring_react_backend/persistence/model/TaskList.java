@@ -22,6 +22,7 @@ public class TaskList {
     @UuidGenerator
     private UUID id;
 
+    @Column(nullable = false)
     private String name;
 
     @ManyToOne

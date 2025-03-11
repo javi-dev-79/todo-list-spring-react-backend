@@ -22,12 +22,13 @@ public class Task {
     @UuidGenerator
     private UUID id;
 
+    @Column(nullable = false)
     private String title;
     private String description;
     private Instant endDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     private TaskStatus taskStatus;
 
     @ManyToOne
