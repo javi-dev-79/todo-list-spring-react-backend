@@ -10,22 +10,22 @@ import java.util.UUID;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
-@RequestMapping("/api/tasks")
+@RequestMapping("/api/users/{userId}/tasklists/{taskListId}/tasks")
 public interface TaskController {
 
     @GetMapping
-    List<TaskDTO> getTasks();
+    List<TaskDTO> getTasks(@PathVariable UUID userId, @PathVariable UUID taskListId);
 
-    @GetMapping("/{id}")
-    TaskDTO getTask(@PathVariable UUID id);
+    @GetMapping("/{taskId}")
+    TaskDTO getTask(@PathVariable UUID userId, @PathVariable UUID taskListId, @PathVariable UUID taskId);
 
     @ResponseStatus(CREATED)
     @PostMapping
-    TaskDTO createTask(@RequestBody CreateTaskRequestBody requestBody);
+    TaskDTO createTask(@PathVariable UUID userId, @PathVariable UUID taskListId, @RequestBody CreateTaskRequestBody requestBody);
 
-    @PutMapping("/{id}")
-    TaskDTO updateTask(@PathVariable UUID id, @RequestBody UpdateTaskRequestBody requestBody);
+    @PutMapping("/{taskId}")
+    TaskDTO updateTask(@PathVariable UUID userId, @PathVariable UUID taskListId, @PathVariable UUID taskId, @RequestBody UpdateTaskRequestBody requestBody);
 
-    @DeleteMapping("/{id}")
-    void deleteTask(@PathVariable UUID id);
+    @DeleteMapping("/{taskId}")
+    void deleteTask(@PathVariable UUID userId, @PathVariable UUID taskListId, @PathVariable UUID taskId);
 }

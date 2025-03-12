@@ -7,6 +7,8 @@ import com.javidev.todo_list_spring_react_backend.presentation.controller.taskli
 import com.javidev.todo_list_spring_react_backend.presentation.controller.tasklist.model.TaskListDTO;
 import com.javidev.todo_list_spring_react_backend.presentation.controller.tasklist.model.UpdateTaskListRequestBody;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -20,27 +22,22 @@ public class TaskListControllerImpl implements TaskListController {
     private final TaskListMapper taskListMapper;
 
     @Override
-    public List<TaskListDTO> getTaskLists() {
-        return taskListMapper.toDTO(taskListService.getAllTaskLists());
+    public List<TaskListDTO> getUserTaskLists(UUID userId) {
+        return taskListMapper.toDTO(taskListService.getUserTaskLists(userId));
     }
 
     @Override
-    public TaskListDTO getTaskListById(UUID id) {
-        return taskListMapper.toDTO(taskListService.getTaskListById(id));
+    public TaskListDTO createTaskList(@PathVariable UUID userId, @RequestBody CreateTaskListRequestBody requestBody) {
+        return taskListMapper.toDTO(taskListService.createTaskList(userId, taskListMapper.toCreateTaskListParameters(requestBody)));
     }
 
     @Override
-    public TaskListDTO createTaskList(CreateTaskListRequestBody requestBody) {
-        return taskListMapper.toDTO(taskListService.createTaskList(taskListMapper.toCreateTaskListParameters(requestBody)));
+    public TaskListDTO updateTaskList(@PathVariable UUID userId, @PathVariable UUID taskListId, @RequestBody UpdateTaskListRequestBody requestBody) {
+        return taskListMapper.toDTO(taskListService.updateTaskList(userId, taskListId, taskListMapper.toUpdateTaskListParameters(requestBody)));
     }
 
     @Override
-    public TaskListDTO updateTaskListById(UUID id, UpdateTaskListRequestBody requestBody) {
-        return taskListMapper.toDTO(taskListService.updateTaskList(id, taskListMapper.toUpdateTaskListParameters(requestBody)));
-    }
-
-    @Override
-    public void deleteTaskListById(UUID id) {
-        taskListService.deleteTaskList(id);
+    public void deleteTaskList(UUID userId, UUID taskListId) {
+        taskListService.deleteTaskList(userId, taskListId);
     }
 }

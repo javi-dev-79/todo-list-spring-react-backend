@@ -18,5 +18,5 @@ public class CreateTaskRequestBody {
     private String description;
     private Instant endDate;
     private TaskStatus taskStatus;
-    private UUID taskListId;
+    private UUID taskList;
 }

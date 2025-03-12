@@ -1,6 +1,7 @@
 package com.javidev.todo_list_spring_react_backend.domain.service;
 
 import com.javidev.todo_list_spring_react_backend.domain.exception.NonExistingEntityException;
+import com.javidev.todo_list_spring_react_backend.domain.exception.UnauthorizedAccessException;
 import com.javidev.todo_list_spring_react_backend.domain.model.task.CreateTaskParameters;
 import com.javidev.todo_list_spring_react_backend.domain.model.task.UpdateTaskParameters;
 import com.javidev.todo_list_spring_react_backend.persistence.model.Task;
@@ -23,25 +24,33 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final TaskListRepository taskListRepository;
 
-    public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+    @Transactional(readOnly = true)
+    public List<Task> getTasks(UUID userId, UUID taskListId) {
+        var taskList = validateTaskListOwnership(userId, taskListId);
+        return taskList.getTasks();
     }
 
-    public Task getTaskById(UUID id) {
-        return taskRepository.findById(id)
-                .orElseThrow(() -> new NonExistingEntityException(Task.class, id));
+    @Transactional(readOnly = true)
+    public Task getTask(UUID userId, UUID taskListId, UUID taskId) {
+        validateTaskListOwnership(userId, taskListId);
+        return taskRepository.findById(taskId)
+                .orElseThrow(() -> new NonExistingEntityException(Task.class, taskId));
     }
 
     @Transactional
-    public Task createTask(CreateTaskParameters parameters) {
-        if (parameters.getTaskListId() == null) {
+    public Task createTask(UUID userId, UUID taskListId, CreateTaskParameters parameters) {
+        if (taskListId == null) {
             throw new IllegalArgumentException("El ID de la lista de tareas no puede ser nulo");
         }
 
-        TaskList taskList = taskListRepository.findById(parameters.getTaskListId())
-                .orElseThrow(() -> new NonExistingEntityException(TaskList.class, parameters.getTaskListId()));
+        var taskList = taskListRepository.findById(taskListId)
+                .orElseThrow(() -> new NonExistingEntityException(TaskList.class, taskListId));
 
-        Task task = Task.builder()
+        if (!taskList.getUser().getId().equals(userId)) {
+            throw new UnauthorizedAccessException("No tienes permisos para agregar tareas en esta lista.");
+        }
+
+        var task = Task.builder()
                 .title(parameters.getTitle())
                 .description(parameters.getDescription())
                 .endDate(parameters.getEndDate())
@@ -52,30 +61,41 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
-
     @Transactional
-    public Task updateTask(UUID id, UpdateTaskParameters updateTaskParameters) {
+    public Task updateTask(UUID userId, UUID taskListId, UUID taskId, UpdateTaskParameters parameters) {
+        validateTaskListOwnership(userId, taskListId);
+        var task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new NonExistingEntityException(Task.class, taskId));
 
-        var existingTask = getTaskById(id);
-
-        if (updateTaskParameters.getTitle() != null) {
-            existingTask.setTitle(updateTaskParameters.getTitle());
+        if (parameters.getTitle() != null) {
+            task.setTitle(parameters.getTitle());
         }
-        if (updateTaskParameters.getDescription() != null) {
-            existingTask.setDescription(updateTaskParameters.getDescription());
+        if (parameters.getDescription() != null) {
+            task.setDescription(parameters.getDescription());
         }
-        if (updateTaskParameters.getEndDate() != null) {
-            existingTask.setEndDate(updateTaskParameters.getEndDate());
+        if (parameters.getEndDate() != null) {
+            task.setEndDate(parameters.getEndDate());
         }
-        if (updateTaskParameters.getTaskStatus() != null) {
-            existingTask.setTaskStatus(updateTaskParameters.getTaskStatus());
+        if (parameters.getTaskStatus() != null) {
+            task.setTaskStatus(parameters.getTaskStatus());
         }
 
-        return taskRepository.save(existingTask);
+        return taskRepository.save(task);
     }
 
     @Transactional
-    public void deleteTask(UUID id) {
-        taskRepository.deleteById(id);
+    public void deleteTask(UUID userId, UUID taskListId, UUID taskId) {
+        validateTaskListOwnership(userId, taskListId);
+        taskRepository.deleteById(taskId);
+    }
+
+    private TaskList validateTaskListOwnership(UUID userId, UUID taskListId) {
+        var taskList = taskListRepository.findById(taskListId)
+                .orElseThrow(() -> new NonExistingEntityException(TaskList.class, taskListId));
+
+        if (!taskList.getUser().getId().equals(userId)) {
+            throw new NonExistingEntityException(TaskList.class, taskListId);
+        }
+        return taskList;
     }
 }

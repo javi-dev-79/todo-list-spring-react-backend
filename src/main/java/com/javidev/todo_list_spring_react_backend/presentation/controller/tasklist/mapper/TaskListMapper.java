@@ -14,8 +14,9 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface TaskListMapper {
 
+    //    @Mapping(source = "user.id", target = "userId")
+//    @Mapping(source = "tasks", target = "tasks")
     @Mapping(source = "user.id", target = "userId")
-    @Mapping(source = "tasks", target = "tasks")
     TaskListDTO toDTO(TaskList taskList);
 
     List<TaskListDTO> toDTO(List<TaskList> taskLists);
