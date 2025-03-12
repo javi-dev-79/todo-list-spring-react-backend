@@ -7,6 +7,8 @@ import com.javidev.todo_list_spring_react_backend.presentation.controller.task.m
 import com.javidev.todo_list_spring_react_backend.presentation.controller.task.model.TaskDTO;
 import com.javidev.todo_list_spring_react_backend.presentation.controller.task.model.UpdateTaskRequestBody;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -20,27 +22,34 @@ public class TaskControllerImpl implements TaskController {
     private final TaskMapper taskMapper;
 
     @Override
-    public List<TaskDTO> getTasks() {
-        return taskMapper.toDTO(taskService.getAllTasks());
+    public List<TaskDTO> getTasks(UUID userId, UUID taskListId) {
+        return taskMapper.toDTO(taskService.getTasks(userId, taskListId));
     }
 
     @Override
-    public TaskDTO getTask(UUID id) {
-        return taskMapper.toDTO(taskService.getTaskById(id));
+    public TaskDTO getTask(UUID userId, UUID taskListId, UUID taskId) {
+        return taskMapper.toDTO(taskService.getTask(userId, taskListId, taskId));
     }
 
     @Override
-    public TaskDTO createTask(CreateTaskRequestBody requestBody) {
-        return taskMapper.toDTO(taskService.createTask(taskMapper.toCreateTaskParameters(requestBody)));
+    public TaskDTO createTask(@PathVariable UUID userId, @PathVariable UUID taskListId, @RequestBody CreateTaskRequestBody requestBody) {
+        return taskMapper.toDTO(taskService.createTask(userId, taskListId, taskMapper.toCreateTaskParameters(requestBody)));
     }
 
-    @Override
-    public TaskDTO updateTask(UUID id, UpdateTaskRequestBody requestBody) {
-        return taskMapper.toDTO(taskService.updateTask(id, taskMapper.toUpdateTaskParameters(requestBody)));
-    }
 
     @Override
-    public void deleteTask(UUID id) {
-        taskService.deleteTask(id);
+    public TaskDTO updateTask(
+            @PathVariable UUID userId,
+            @PathVariable UUID taskListId,
+            @PathVariable UUID taskId,
+            @RequestBody UpdateTaskRequestBody requestBody
+    ) {
+        return taskMapper.toDTO(taskService.updateTask(userId, taskListId, taskId, taskMapper.toUpdateTaskParameters(requestBody)));
+    }
+
+
+    @Override
+    public void deleteTask(UUID userId, UUID taskListId, UUID taskId) {
+        taskService.deleteTask(userId, taskListId, taskId);
     }
 }

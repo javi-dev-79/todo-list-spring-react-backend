@@ -10,22 +10,21 @@ import java.util.UUID;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
-@RequestMapping("/api/task_lists")
+@RequestMapping("/api/users/{userId}/tasklists")
 public interface TaskListController {
 
     @GetMapping
-    List<TaskListDTO> getTaskLists();
-
-    @GetMapping("/{id}")
-    TaskListDTO getTaskListById(@PathVariable UUID id);
+    List<TaskListDTO> getUserTaskLists(@PathVariable UUID userId);
 
     @ResponseStatus(CREATED)
     @PostMapping
-    TaskListDTO createTaskList(@RequestBody CreateTaskListRequestBody requestBody);
+//    TaskListDTO createTaskList(CreateTaskListRequestBody requestBody, UUID userId);
+    TaskListDTO createTaskList(@PathVariable UUID userId, @RequestBody CreateTaskListRequestBody requestBody);
 
-    @PutMapping("/{id}")
-    TaskListDTO updateTaskListById(@PathVariable UUID id, @RequestBody UpdateTaskListRequestBody requestBody);
+    @PutMapping("/{taskListId}")
+    TaskListDTO updateTaskList(@PathVariable UUID userId, @PathVariable UUID taskListId, @RequestBody UpdateTaskListRequestBody requestBody);
 
-    @DeleteMapping("/{id}")
-    void deleteTaskListById(@PathVariable UUID id);
+    @DeleteMapping("/{taskListId}")
+    void deleteTaskList(@PathVariable UUID userId, @PathVariable UUID taskListId);
 }
+
