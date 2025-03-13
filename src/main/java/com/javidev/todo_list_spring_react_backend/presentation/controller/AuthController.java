@@ -1,5 +1,9 @@
 package com.javidev.todo_list_spring_react_backend.presentation.controller;
 
+import com.javidev.todo_list_spring_react_backend.domain.service.AuthService;
+import com.javidev.todo_list_spring_react_backend.persistence.model.AppUser;
+import com.javidev.todo_list_spring_react_backend.persistence.repository.UserRepository;
+import com.javidev.todo_list_spring_react_backend.presentation.controller.user.model.RegisterRequest;
 import com.javidev.todo_list_spring_react_backend.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,17 +26,40 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
+    private final AuthService authService;
+    private final UserRepository userRepository;
 
     @PostMapping("/login")
     public Map<String, String> authenticate(@RequestBody Map<String, String> credentials) {
         String email = credentials.get("email");
         String password = credentials.get("password");
 
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+        try {
 
-        var userDetails = userDetailsService.loadUserByUsername(email);
-        String token = jwtUtil.generateToken(userDetails);
+            System.out.println("🔹 Intentando autenticar usuario: " + email);
 
-        return Map.of("token", token);
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+            System.out.println("✅ Autenticación exitosa para usuario: " + email);
+
+            var userDetails = userDetailsService.loadUserByUsername(email);
+            String token = jwtUtil.generateToken(userDetails);
+
+            AppUser user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            String role = user.getRole().toString();
+            System.out.println("🔹 Usuario autenticado: " + email + ", Rol: " + role);
+
+            return Map.of("token", token, "role", role);
+        } catch (Exception e) {
+            System.err.println("❌ Error en autenticación: " + e.getMessage());
+            return Map.of("token", e.getMessage());
+        }
     }
+
+    @PostMapping("/register")
+    public Map<String, String> register(@RequestBody RegisterRequest request) {
+        log.info("Solicitud de registro recibida para: {}", request.getEmail());
+        authService.register(request);
+        return Map.of("message", "Usuario registrado con éxito");
+    }
+
 }

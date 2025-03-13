@@ -17,5 +17,6 @@ public class UserDTO {
     private UUID id;
     private String name;
     private String email;
+    private String role;
     private List<TaskListDTO> taskLists;
 }

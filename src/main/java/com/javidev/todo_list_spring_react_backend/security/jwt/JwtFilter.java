@@ -16,6 +16,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -24,8 +25,25 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService userDetailsService;
 
+    private static final List<String> EXCLUDED_URLS = List.of(
+            "/api/auth/login",
+            "/api/auth/register"
+    );
+
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain
+    ) throws ServletException, IOException {
+
+        String requestURI = request.getRequestURI();
+
+        if (EXCLUDED_URLS.contains(requestURI)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String token = request.getHeader("Authorization");
 
         if (token != null && token.startsWith("Bearer ")) {

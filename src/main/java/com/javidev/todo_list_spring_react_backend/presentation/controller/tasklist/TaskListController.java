@@ -18,7 +18,6 @@ public interface TaskListController {
 
     @ResponseStatus(CREATED)
     @PostMapping
-//    TaskListDTO createTaskList(CreateTaskListRequestBody requestBody, UUID userId);
     TaskListDTO createTaskList(@PathVariable UUID userId, @RequestBody CreateTaskListRequestBody requestBody);
 
     @PutMapping("/{taskListId}")
