@@ -21,7 +21,11 @@ public class UserControllerImpl implements UserController {
 
     @Override
     public List<UserDTO> getUsers() {
-        return userMapper.toDTO(userService.getAllUsers());
+//        return userMapper.toDTO(userService.getAllUsers());
+        System.out.println("🔹 Se ha solicitado la lista de usuarios");
+        List<UserDTO> users = userMapper.toDTO(userService.getAllUsers());
+        System.out.println("✅ Usuarios encontrados: " + users.size());
+        return users;
     }
 
     @Override
@@ -36,6 +40,8 @@ public class UserControllerImpl implements UserController {
 
     @Override
     public UserDTO updateUser(UUID id, UpdateUserRequestBody requestBody) {
+        System.out.println("🔹 Recibida petición para actualizar usuario con ID: " + id);
+        System.out.println("🔹 Nuevo rol recibido: " + requestBody.getRole());
         return userMapper.toDTO(userService.updateUser(id, userMapper.toUpdateUserParameters(requestBody)));
     }
 

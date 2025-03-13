@@ -2,10 +2,13 @@ package com.javidev.todo_list_spring_react_backend.security;
 
 import com.javidev.todo_list_spring_react_backend.persistence.model.AppUser;
 import com.javidev.todo_list_spring_react_backend.persistence.repository.UserRepository;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
 
 @Service
 public class CustomUserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
@@ -18,13 +21,12 @@ public class CustomUserDetailsService implements org.springframework.security.co
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AppUser appUser = userRepository.findByEmail(username)
+        AppUser user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
 
-        return User.builder()
-                .username(appUser.getEmail())
-                .password(appUser.getPassword())
-                .authorities("USER")
+        return User.withUsername(user.getEmail())
+                .password(user.getPassword())
+                .authorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().toString())))
                 .build();
     }
 }

@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class UpdateUserRequestBody {
     private String name;
     private String email;
+    private String role;
 }
