@@ -1,5 +1,6 @@
 package com.javidev.todo_list_spring_react_backend.security.jwt;
 
+import com.javidev.todo_list_spring_react_backend.security.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

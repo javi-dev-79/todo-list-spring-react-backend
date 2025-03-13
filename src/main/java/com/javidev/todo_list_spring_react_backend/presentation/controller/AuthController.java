@@ -1,6 +1,6 @@
 package com.javidev.todo_list_spring_react_backend.presentation.controller;
 
-import com.javidev.todo_list_spring_react_backend.security.jwt.JwtUtil;
+import com.javidev.todo_list_spring_react_backend.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;

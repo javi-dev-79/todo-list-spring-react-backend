@@ -1,4 +1,4 @@
-package com.javidev.todo_list_spring_react_backend.security.jwt;
+package com.javidev.todo_list_spring_react_backend.security;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
