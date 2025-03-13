@@ -4,6 +4,8 @@ import com.javidev.todo_list_spring_react_backend.domain.exception.NonExistingEn
 import com.javidev.todo_list_spring_react_backend.domain.model.user.CreateUserParameters;
 import com.javidev.todo_list_spring_react_backend.domain.model.user.UpdateUserParameters;
 import com.javidev.todo_list_spring_react_backend.persistence.model.AppUser;
+import com.javidev.todo_list_spring_react_backend.persistence.model.Role;
+import com.javidev.todo_list_spring_react_backend.persistence.model.TaskList;
 import com.javidev.todo_list_spring_react_backend.persistence.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +31,11 @@ public class UserService {
                 .orElseThrow(() -> new NonExistingEntityException(AppUser.class, id));
     }
 
+    public AppUser getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new NonExistingEntityException(AppUser.class, email));
+    }
+
     @Transactional
     public AppUser createUser(CreateUserParameters parameters) {
         var user = AppUser.builder()
@@ -36,14 +43,33 @@ public class UserService {
                 .email(parameters.getEmail())
                 .build();
 
-        return userRepository.save(user);
+        var newUser = userRepository.save(user);
+
+        TaskList defaultTaskList = new TaskList();
+        defaultTaskList.setName("Lista General");
+        defaultTaskList.setUser(newUser);
+
+        return newUser;
     }
 
     @Transactional
-    public AppUser updateUser(UUID id, UpdateUserParameters updateUserParameters) {
-        var existingUser = getUserById(id);
+    public AppUser updateUser(UUID userId, UpdateUserParameters updateUserParameters) {
+        var existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new NonExistingEntityException(AppUser.class, userId));
+
         existingUser.setEmail(updateUserParameters.getEmail());
         existingUser.setName(updateUserParameters.getName());
+        return userRepository.save(existingUser);
+    }
+
+    @Transactional
+    public AppUser updateUserRole(UUID userId, String newRole) {
+        var existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new NonExistingEntityException(AppUser.class, userId));
+
+        System.out.println("🔹 Rol actual: " + existingUser.getRole() + " ➝ Nuevo rol: " + newRole);
+
+        existingUser.setRole(Role.valueOf(newRole));
         return userRepository.save(existingUser);
     }
 
@@ -51,4 +77,5 @@ public class UserService {
     public void deleteUser(UUID id) {
         userRepository.deleteById(id);
     }
+
 }

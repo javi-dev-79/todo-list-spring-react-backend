@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateUserRequestBody {
-    private String name;
-    private String email;
+public class UpdateUserRoleRequestBody {
     private String role;
 }

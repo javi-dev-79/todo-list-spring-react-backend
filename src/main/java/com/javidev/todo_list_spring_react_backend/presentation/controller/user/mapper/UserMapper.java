@@ -16,6 +16,7 @@ import java.util.List;
 public interface UserMapper {
 
     @Mapping(target = "taskLists", source = "taskLists", defaultExpression = "java(new ArrayList<>())")
+    @Mapping(target = "role", source = "role")
     UserDTO toDTO(AppUser user);
 
     List<UserDTO> toDTO(List<AppUser> users);
