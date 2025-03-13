@@ -1,8 +1,11 @@
 package com.javidev.todo_list_spring_react_backend.security;
 
 import com.javidev.todo_list_spring_react_backend.security.jwt.JwtFilter;
+import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -29,6 +33,20 @@ public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
     private final CustomUserDetailsService userDetailsService;
+
+    private String secretKey = "";
+
+    @PostConstruct
+    public void init() {
+        Dotenv dotenv = Dotenv.load();
+        secretKey = dotenv.get("JWT_SECRET");
+        if (secretKey == null || secretKey.isEmpty()) {
+            throw new IllegalArgumentException("JWT_SECRET must be set in the environment variables");
+        }
+        System.out.println("JWT_SECRET cargado en SecurityConfig: " + secretKey);
+        log.info("JWT_SECRET cargado en SecurityConfig: {}", secretKey);
+    }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -45,7 +63,6 @@ public class SecurityConfig {
 
     @Bean
     public JwtDecoder jwtDecoder() {
-        String secretKey = "tu_clave_secreta_muy_larga_y_segura_para_firmar_el_jwt"; // Cambia esto por una clave segura
         SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         return NimbusJwtDecoder.withSecretKey(key).build();
     }
@@ -53,14 +70,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                .csrf(AbstractHttpConfigurer::disable)  // Deshabilita CSRF
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/login").permitAll()  // Permite el acceso al login
-                        .anyRequest().authenticated()  // Requiere autenticación para el resto de los endpoints
+                        .requestMatchers("/api/auth/login").permitAll()
+                        .anyRequest().authenticated()
                 )
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // Sin estado
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))  // Configura el servidor de recursos OAuth2 para usar JWT
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)  // Añadir el filtro JWT
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 }
