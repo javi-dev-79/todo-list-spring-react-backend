@@ -2,6 +2,7 @@ package com.javidev.todo_list_spring_react_backend.presentation.controller.user;
 
 import com.javidev.todo_list_spring_react_backend.presentation.controller.user.model.CreateUserRequestBody;
 import com.javidev.todo_list_spring_react_backend.presentation.controller.user.model.UpdateUserRequestBody;
+import com.javidev.todo_list_spring_react_backend.presentation.controller.user.model.UpdateUserRoleRequestBody;
 import com.javidev.todo_list_spring_react_backend.presentation.controller.user.model.UserDTO;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +30,12 @@ public interface UserController {
     UserDTO updateUser(
             @PathVariable UUID id,
             @RequestBody UpdateUserRequestBody requestBody
+    );
+
+    @PutMapping("/{id}/role")
+    UserDTO updateUserRole(
+            @PathVariable UUID id,
+            @RequestBody UpdateUserRoleRequestBody requestBody
     );
 
     @DeleteMapping("/{id}")

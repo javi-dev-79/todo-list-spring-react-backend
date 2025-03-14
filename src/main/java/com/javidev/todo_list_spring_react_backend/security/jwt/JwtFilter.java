@@ -57,7 +57,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     if (jwtUtil.validateToken(token, userDetailsService.loadUserByUsername(username))) {
-                        // Añadir el prefijo "ROLE_" a la autoridad
                         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                                 username,
                                 null,
