@@ -1,5 +1,6 @@
 package com.javidev.todo_list_spring_react_backend.security.jwt;
 
+import com.javidev.todo_list_spring_react_backend.domain.exception.NonExistingEntityException;
 import com.javidev.todo_list_spring_react_backend.persistence.model.AppUser;
 import com.javidev.todo_list_spring_react_backend.persistence.repository.UserRepository;
 import com.javidev.todo_list_spring_react_backend.security.CustomUserDetailsService;
@@ -52,7 +53,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 String username = jwtUtil.extractUsername(token);
                 System.out.println("✅ Usuario autenticado: " + username);
 
-                AppUser user = userRepository.findByEmail(username).orElseThrow();
+                AppUser user = userRepository.findByEmail(username).orElseThrow(() -> new NonExistingEntityException(AppUser.class, username));
                 System.out.println("🔹 Rol del usuario autenticado en la BD: " + user.getRole());
 
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {

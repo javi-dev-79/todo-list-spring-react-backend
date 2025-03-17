@@ -1,11 +1,10 @@
 package com.javidev.todo_list_spring_react_backend.security;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -20,24 +19,11 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class JwtUtil {
 
+    @Value(value = "${jwt.secret}")
     private String secret;
-    private Long expiration = 86400L;
 
-    @PostConstruct
-    public void init() {
-        Dotenv dotenv = Dotenv.load();
-        this.secret = dotenv.get("JWT_SECRET", System.getenv("JWT_SECRET"));
-
-        System.out.println("JWT_SECRET desde .env: " + dotenv.get("JWT_SECRET"));
-        System.out.println("JWT_SECRET desde env: " + System.getenv("JWT_SECRET"));
-        System.out.println("JWT_SECRET final usado: " + this.secret);
-
-    }
-
-    public JwtUtil(String secret, Long expiration) {
-        this.secret = secret;
-        this.expiration = expiration;
-    }
+    @Value(value = "${jwt.expiration}")
+    private Long expiration;
 
     private SecretKey getSigningKey() {
         byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);

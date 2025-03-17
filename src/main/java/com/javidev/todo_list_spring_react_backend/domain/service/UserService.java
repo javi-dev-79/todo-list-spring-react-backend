@@ -30,6 +30,11 @@ public class UserService {
                 .orElseThrow(() -> new NonExistingEntityException(AppUser.class, id));
     }
 
+    public AppUser getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new NonExistingEntityException(AppUser.class, email));
+    }
+
     @Transactional
     public AppUser createUser(CreateUserParameters parameters) {
         var user = AppUser.builder()

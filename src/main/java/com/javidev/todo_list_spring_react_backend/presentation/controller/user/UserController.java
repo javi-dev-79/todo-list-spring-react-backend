@@ -20,6 +20,9 @@ public interface UserController {
     @GetMapping("/{id}")
     UserDTO getUserById(@PathVariable UUID id);
 
+    @GetMapping("/email/{email}")
+    UserDTO getUserByEmail(@PathVariable String email);
+
     @ResponseStatus(CREATED)
     @PostMapping
     UserDTO createUser(

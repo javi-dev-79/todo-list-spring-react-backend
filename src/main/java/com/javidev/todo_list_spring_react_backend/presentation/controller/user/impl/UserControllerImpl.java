@@ -31,22 +31,23 @@ public class UserControllerImpl implements UserController {
     }
 
     @Override
+    public UserDTO getUserByEmail(String email) {
+        System.out.println("🔹 Buscando usuario con email: " + email);
+        return userMapper.toDTO(userService.getUserByEmail(email));
+    }
+
+    @Override
     public UserDTO createUser(CreateUserRequestBody requestBody) {
         return userMapper.toDTO(userService.createUser(userMapper.toCreateUserParameters(requestBody)));
     }
 
     @Override
     public UserDTO updateUser(UUID id, UpdateUserRequestBody requestBody) {
-        System.out.println("🔹 Recibida petición para actualizar usuario con ID: " + id);
-        System.out.println("🔹 Nuevo rol recibido: " + requestBody.getRole());
         return userMapper.toDTO(userService.updateUser(id, userMapper.toUpdateUserParameters(requestBody)));
     }
 
     @Override
     public UserDTO updateUserRole(UUID id, UpdateUserRoleRequestBody requestBody) {
-        System.out.println("🔹 Recibida petición PUT para actualizar rol");
-        System.out.println("🔹 ID del usuario: " + id);
-        System.out.println("🔹 Nuevo rol recibido: " + requestBody.getRole());
         return userMapper.toDTO((userService.updateUserRole(id, requestBody.getRole())));
     }
 

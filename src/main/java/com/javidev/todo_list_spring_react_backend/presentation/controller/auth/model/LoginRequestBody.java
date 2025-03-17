@@ -1,4 +1,4 @@
-package com.javidev.todo_list_spring_react_backend.presentation.controller.user.model;
+package com.javidev.todo_list_spring_react_backend.presentation.controller.auth.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Builder
-public class RegisterRequest {
-    private String name;
+public class LoginRequestBody {
     private String email;
     private String password;
 }
