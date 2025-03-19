@@ -5,6 +5,7 @@ import com.javidev.todo_list_spring_react_backend.presentation.controller.user.U
 import com.javidev.todo_list_spring_react_backend.presentation.controller.user.mapper.UserMapper;
 import com.javidev.todo_list_spring_react_backend.presentation.controller.user.model.CreateUserRequestBody;
 import com.javidev.todo_list_spring_react_backend.presentation.controller.user.model.UpdateUserRequestBody;
+import com.javidev.todo_list_spring_react_backend.presentation.controller.user.model.UpdateUserRoleRequestBody;
 import com.javidev.todo_list_spring_react_backend.presentation.controller.user.model.UserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +31,12 @@ public class UserControllerImpl implements UserController {
     }
 
     @Override
+    public UserDTO getUserByEmail(String email) {
+        System.out.println("🔹 Buscando usuario con email: " + email);
+        return userMapper.toDTO(userService.getUserByEmail(email));
+    }
+
+    @Override
     public UserDTO createUser(CreateUserRequestBody requestBody) {
         return userMapper.toDTO(userService.createUser(userMapper.toCreateUserParameters(requestBody)));
     }
@@ -37,6 +44,11 @@ public class UserControllerImpl implements UserController {
     @Override
     public UserDTO updateUser(UUID id, UpdateUserRequestBody requestBody) {
         return userMapper.toDTO(userService.updateUser(id, userMapper.toUpdateUserParameters(requestBody)));
+    }
+
+    @Override
+    public UserDTO updateUserRole(UUID id, UpdateUserRoleRequestBody requestBody) {
+        return userMapper.toDTO((userService.updateUserRole(id, requestBody.getRole())));
     }
 
     @Override

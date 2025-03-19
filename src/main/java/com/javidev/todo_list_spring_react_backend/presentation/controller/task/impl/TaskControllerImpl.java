@@ -1,10 +1,14 @@
 package com.javidev.todo_list_spring_react_backend.presentation.controller.task.impl;
 
+import com.javidev.todo_list_spring_react_backend.domain.exception.NonExistingEntityException;
 import com.javidev.todo_list_spring_react_backend.domain.service.TaskService;
+import com.javidev.todo_list_spring_react_backend.persistence.model.Task;
+import com.javidev.todo_list_spring_react_backend.persistence.repository.TaskRepository;
 import com.javidev.todo_list_spring_react_backend.presentation.controller.task.TaskController;
 import com.javidev.todo_list_spring_react_backend.presentation.controller.task.mapper.TaskMapper;
 import com.javidev.todo_list_spring_react_backend.presentation.controller.task.model.CreateTaskRequestBody;
 import com.javidev.todo_list_spring_react_backend.presentation.controller.task.model.TaskDTO;
+import com.javidev.todo_list_spring_react_backend.presentation.controller.task.model.TaskStatusUpdateRequest;
 import com.javidev.todo_list_spring_react_backend.presentation.controller.task.model.UpdateTaskRequestBody;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +24,7 @@ public class TaskControllerImpl implements TaskController {
 
     private final TaskService taskService;
     private final TaskMapper taskMapper;
+    private final TaskRepository taskRepository;
 
     @Override
     public List<TaskDTO> getTasks(UUID userId, UUID taskListId) {
@@ -45,6 +50,15 @@ public class TaskControllerImpl implements TaskController {
             @RequestBody UpdateTaskRequestBody requestBody
     ) {
         return taskMapper.toDTO(taskService.updateTask(userId, taskListId, taskId, taskMapper.toUpdateTaskParameters(requestBody)));
+    }
+
+    @Override
+    public TaskDTO updateTaskStatus(UUID userId, UUID taskListId, UUID taskId, TaskStatusUpdateRequest request) {
+        Task task = taskRepository.findByIdAndTaskListIdAndTaskListUserId(taskId, taskListId, userId)
+                .orElseThrow(() -> new NonExistingEntityException(Task.class));
+
+        task.setTaskStatus(request.getTaskStatus());
+        return taskMapper.toDTO(taskRepository.save(task));
     }
 
 

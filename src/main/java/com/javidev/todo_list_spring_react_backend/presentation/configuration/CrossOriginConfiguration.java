@@ -8,16 +8,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class CrossOriginConfiguration implements WebMvcConfigurer {
 
-    @Value("${frontend.admin.url}")
-    private String frontendAdminUrl;
+    @Value(value = "${frontend.admin.url}")
+    private String url;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:8080", frontendAdminUrl)
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("Authorization", "Content-Type", "Accept", "Access-Control-Allow-Origin")
+                .allowedOrigins(url)
+                .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
                 .allowCredentials(true);
     }
 }

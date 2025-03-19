@@ -2,7 +2,9 @@ package com.javidev.todo_list_spring_react_backend.presentation.controller.user;
 
 import com.javidev.todo_list_spring_react_backend.presentation.controller.user.model.CreateUserRequestBody;
 import com.javidev.todo_list_spring_react_backend.presentation.controller.user.model.UpdateUserRequestBody;
+import com.javidev.todo_list_spring_react_backend.presentation.controller.user.model.UpdateUserRoleRequestBody;
 import com.javidev.todo_list_spring_react_backend.presentation.controller.user.model.UserDTO;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +21,10 @@ public interface UserController {
     @GetMapping("/{id}")
     UserDTO getUserById(@PathVariable UUID id);
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @GetMapping("/email/{email}")
+    UserDTO getUserByEmail(@PathVariable String email);
+
     @ResponseStatus(CREATED)
     @PostMapping
     UserDTO createUser(
@@ -29,6 +35,12 @@ public interface UserController {
     UserDTO updateUser(
             @PathVariable UUID id,
             @RequestBody UpdateUserRequestBody requestBody
+    );
+
+    @PutMapping("/{id}/role")
+    UserDTO updateUserRole(
+            @PathVariable UUID id,
+            @RequestBody UpdateUserRoleRequestBody requestBody
     );
 
     @DeleteMapping("/{id}")
