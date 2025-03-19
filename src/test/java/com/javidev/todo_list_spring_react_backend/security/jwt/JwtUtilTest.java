@@ -6,7 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Date;
 
@@ -26,9 +28,17 @@ class JwtUtilTest {
 
     @BeforeEach
     void setUp() {
-        jwtUtil = new JwtUtil("mysecretkeymysecretkeymysecretkey", 3600L); // Clave de 32+ caracteres
+        jwtUtil = new JwtUtil();
+        String SECRET_KEY = "mysecretkeymysecretkeymysecretkeymysecretkey";
+        ReflectionTestUtils.setField(jwtUtil, "secret", SECRET_KEY);
+        // 1 hora
+        long EXPIRATION_TIME = 1000 * 60 * 60;
+        ReflectionTestUtils.setField(jwtUtil, "expiration", EXPIRATION_TIME);
 
-        when(mockUserDetails.getUsername()).thenReturn("testuser");
+        mockUserDetails = User.withUsername("testuser")
+                .password("password")
+                .authorities("USER")
+                .build();
 
         token = jwtUtil.generateToken(mockUserDetails);
     }
