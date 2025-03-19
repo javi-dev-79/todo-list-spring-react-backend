@@ -2,6 +2,7 @@ package com.javidev.todo_list_spring_react_backend.presentation.controller.task;
 
 import com.javidev.todo_list_spring_react_backend.presentation.controller.task.model.CreateTaskRequestBody;
 import com.javidev.todo_list_spring_react_backend.presentation.controller.task.model.TaskDTO;
+import com.javidev.todo_list_spring_react_backend.presentation.controller.task.model.TaskStatusUpdateRequest;
 import com.javidev.todo_list_spring_react_backend.presentation.controller.task.model.UpdateTaskRequestBody;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +26,13 @@ public interface TaskController {
 
     @PutMapping("/{taskId}")
     TaskDTO updateTask(@PathVariable UUID userId, @PathVariable UUID taskListId, @PathVariable UUID taskId, @RequestBody UpdateTaskRequestBody requestBody);
+
+    @PutMapping("/{taskId}/status")
+    TaskDTO updateTaskStatus(
+            @PathVariable UUID userId,
+            @PathVariable UUID taskListId,
+            @PathVariable UUID taskId,
+            @RequestBody TaskStatusUpdateRequest request);
 
     @DeleteMapping("/{taskId}")
     void deleteTask(@PathVariable UUID userId, @PathVariable UUID taskListId, @PathVariable UUID taskId);

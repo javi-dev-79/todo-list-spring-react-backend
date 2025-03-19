@@ -5,6 +5,7 @@ import com.javidev.todo_list_spring_react_backend.domain.model.user.CreateUserPa
 import com.javidev.todo_list_spring_react_backend.domain.model.user.UpdateUserParameters;
 import com.javidev.todo_list_spring_react_backend.persistence.model.AppUser;
 import com.javidev.todo_list_spring_react_backend.persistence.model.Role;
+import com.javidev.todo_list_spring_react_backend.persistence.model.TaskList;
 import com.javidev.todo_list_spring_react_backend.persistence.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +43,13 @@ public class UserService {
                 .email(parameters.getEmail())
                 .build();
 
-        return userRepository.save(user);
+        var newUser = userRepository.save(user);
+
+        TaskList defaultTaskList = new TaskList();
+        defaultTaskList.setName("Lista General");
+        defaultTaskList.setUser(newUser);
+
+        return newUser;
     }
 
     @Transactional
