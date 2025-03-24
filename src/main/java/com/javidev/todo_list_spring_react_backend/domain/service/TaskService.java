@@ -84,6 +84,7 @@ public class TaskService {
     }
 
     private void validateTaskListOwnership(UUID userId, UUID taskListId) {
+        log.info("🔎 Validando ownership: userId = {}, taskListId = {}", userId, taskListId);
         taskListRepository.findByIdAndUserId(taskListId, userId).orElseThrow(() -> new NonExistingEntityException(TaskList.class, taskListId));
     }
 }

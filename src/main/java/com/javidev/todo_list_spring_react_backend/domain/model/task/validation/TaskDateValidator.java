@@ -4,7 +4,8 @@ import com.javidev.todo_list_spring_react_backend.persistence.model.Task;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 public class TaskDateValidator implements ConstraintValidator<ValidDateRange, Task> {
 
@@ -18,10 +19,12 @@ public class TaskDateValidator implements ConstraintValidator<ValidDateRange, Ta
             return true;
         }
 
-        Instant now = Instant.now();
-        if (task.getEndDate().isBefore(now)) {
+        LocalDate taskDate = task.getEndDate().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate today = LocalDate.now();
+
+        if (taskDate.isBefore(today)) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("End date must be in the future")
+            context.buildConstraintViolationWithTemplate("End date must be today or in the future")
                     .addPropertyNode("endDate")
                     .addConstraintViolation();
             return false;
